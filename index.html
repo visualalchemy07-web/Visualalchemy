@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VisualAlchemy — creative movie and festival poster edits by a creative poster artist.">
+  <meta name="theme-color" content="#090909">
+  <title>VisualAlchemy — Poster Art & Visual Stories</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#070707; --panel:#101010; --text:#f6f3ee; --muted:#a9a5a0;
+      --line:rgba(255,255,255,.11); --accent:#f1b85b; --accent2:#d86b45;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:"DM Sans",sans-serif;background:
+      radial-gradient(circle at 15% 5%,rgba(216,107,69,.15),transparent 28%),
+      radial-gradient(circle at 90% 15%,rgba(241,184,91,.10),transparent 25%),
+      var(--bg);color:var(--text);line-height:1.6}
+    a{color:inherit;text-decoration:none}
+    .nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:rgba(7,7,7,.72);border-bottom:1px solid var(--line)}
+    .nav-inner{max-width:1180px;margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:"Playfair Display",serif;font-size:1.55rem;letter-spacing:.03em}
+    .logo span{color:var(--accent)}
+    .navlinks{display:flex;gap:24px;color:#d4d0cb;font-size:.92rem}
+    .navlinks a:hover{color:var(--accent)}
+    .hero{min-height:82vh;max-width:1180px;margin:auto;padding:100px 24px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center}
+    .eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.22em;font-size:.76rem;font-weight:700;margin-bottom:18px}
+    h1{font-family:"Playfair Display",serif;font-size:clamp(3.5rem,8vw,7rem);line-height:.92;letter-spacing:-.045em;max-width:800px}
+    h1 em{font-style:normal;color:var(--accent)}
+    .hero p{max-width:650px;color:var(--muted);font-size:1.08rem;margin:28px 0}
+    .buttons{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{padding:12px 18px;border:1px solid var(--line);border-radius:999px;transition:.25s}
+    .btn.primary{background:var(--text);color:#080808;border-color:var(--text);font-weight:700}
+    .btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+    .hero-art{position:relative;aspect-ratio:4/5;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 90px rgba(0,0,0,.55);transform:rotate(2deg)}
+    .hero-art img{width:100%;height:100%;object-fit:cover}
+    .hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.7))}
+    .hero-tag{position:absolute;z-index:2;bottom:20px;left:20px;right:20px;font-size:.8rem;text-transform:uppercase;letter-spacing:.15em;color:#ddd}
+    section{max-width:1180px;margin:auto;padding:80px 24px}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:30px}
+    .section-head h2{font-family:"Playfair Display",serif;font-size:clamp(2rem,4vw,3.5rem)}
+    .section-head p{color:var(--muted);max-width:430px}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{position:relative;overflow:hidden;border-radius:18px;background:var(--panel);border:1px solid var(--line);cursor:pointer}
+    .card img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;transition:transform .5s}
+    .card:hover img{transform:scale(1.045)}
+    .card-info{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+    .card-info span:last-child{color:var(--muted);font-size:.8rem}
+    .about{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start}
+    .about h2{font-family:"Playfair Display",serif;font-size:clamp(2.5rem,5vw,4.5rem);line-height:1}
+    .about p{color:var(--muted);font-size:1.03rem;margin-bottom:18px}
+    .contact{border:1px solid var(--line);border-radius:26px;padding:38px;background:linear-gradient(135deg,rgba(241,184,91,.10),rgba(216,107,69,.04))}
+    .contact h3{font-family:"Playfair Display",serif;font-size:2rem;margin-bottom:10px}
+    .contact a{display:inline-block;margin-top:16px;color:var(--accent);font-weight:700;word-break:break-word}
+    footer{border-top:1px solid var(--line);padding:30px 24px;color:var(--muted);text-align:center}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;place-items:center;z-index:50;padding:24px}
+    .modal.open{display:grid}
+    .modal img{max-width:min(92vw,900px);max-height:88vh;object-fit:contain;border-radius:10px}
+    .close{position:fixed;top:18px;right:22px;border:1px solid var(--line);background:#111;color:#fff;border-radius:50%;width:42px;height:42px;font-size:24px;cursor:pointer}
+    @media(max-width:800px){
+      .navlinks{display:none}.hero{grid-template-columns:1fr;padding-top:70px}.hero-art{max-width:520px;margin:auto;width:100%}
+      .gallery{grid-template-columns:repeat(2,1fr)}.about{grid-template-columns:1fr}
+    }
+    @media(max-width:520px){.gallery{grid-template-columns:1fr}.nav-inner{padding:16px}.hero,section{padding-left:18px;padding-right:18px}}
+  
+/* ===== VisualAlchemy V2 additions ===== */
+.featured{max-width:1180px;margin:auto;padding:30px 24px 70px}
+.featured-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}
+.featured-card{min-height:360px;border:1px solid var(--line);border-radius:22px;overflow:hidden;position:relative;background:var(--panel);cursor:pointer}
+.featured-card img{width:100%;height:100%;object-fit:cover}
+.featured-card .overlay{position:absolute;inset:auto 0 0;padding:28px;background:linear-gradient(transparent,rgba(0,0,0,.92))}
+.featured-card h3{font-family:"Playfair Display",serif;font-size:2rem}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 22px}
+.filter{padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:#ddd;cursor:pointer}
+.filter.active,.filter:hover{background:var(--text);color:#080808}
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:25px}
+.service{padding:25px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.025)}
+.service h3{margin-bottom:7px}.service p{color:var(--muted)}
+@media(max-width:800px){.featured-grid{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.services{grid-template-columns:1fr}}
+
+
+/* ===== VISUALALCHEMY V3 PREMIUM LAYER ===== */
+:root{--glass:rgba(255,255,255,.045);--gold2:#ffd37a}
+body{overflow-x:hidden}
+.nav{transition:background .3s,box-shadow .3s}
+.nav.scrolled{background:rgba(7,7,7,.94);box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.hero{position:relative}
+.hero:before{content:"";position:absolute;width:520px;height:520px;left:-260px;top:100px;border-radius:50%;background:rgba(241,184,91,.08);filter:blur(90px);pointer-events:none}
+.heroart{transition:transform .5s,box-shadow .5s}
+.heroart:hover{transform:rotate(0deg) translateY(-6px);box-shadow:0 45px 120px rgba(0,0,0,.7)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:42px;max-width:650px}
+.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--glass)}
+.stat strong{display:block;font:700 1.5rem "Playfair Display",serif}.stat span{color:var(--muted);font-size:.78rem}
+.section-label{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.15em;margin-bottom:16px}
+.section-label:before{content:"";width:30px;height:1px;background:var(--gold)}
+.featured-card{transition:transform .3s,border-color .3s}.featured-card:hover{transform:translateY(-5px);border-color:rgba(241,184,91,.5)}
+.gallery{grid-template-columns:repeat(4,1fr)}
+.card{transition:transform .3s,border-color .3s,box-shadow .3s}.card:hover{box-shadow:0 20px 55px rgba(0,0,0,.35)}
+.card .info strong{font-size:.95rem}
+.services .service{transition:transform .25s,border-color .25s}.services .service:hover{transform:translateY(-4px);border-color:rgba(241,184,91,.45)}
+.social-proof{max-width:1180px;margin:auto;padding:10px 24px 80px;text-align:center}.social-proof p{color:var(--muted);font-size:.9rem}.social-proof a{color:var(--gold)}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:none}
+.backtop{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(15,15,15,.9);color:#fff;display:none;z-index:30;cursor:pointer}.backtop.show{display:block}
+@media(max-width:900px){.gallery{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.gallery{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}}
+@media(max-width:520px){.gallery{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.stat:last-child{grid-column:auto}}
+
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#home">Visual<span>Alchemy</span></a>
+      <div class="navlinks">
+        <a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="home">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Movie • Festival • Poster Art</div>
+        <h1>Turning ideas into <em>visual stories.</em></h1>
+        <p>Welcome to VisualAlchemy — a creative space for movie edits, festival posters and experimental visual designs.</p>
+        <div class="buttons">
+          <a class="btn primary" href="#work">Explore the edits</a>
+          <a class="btn" href="https://instagram.com/visualalchemy.07" target="_blank" rel="noopener">Instagram @visualalchemy.07</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>Movie</strong><span>Poster edits</span></div>
+          <div class="stat"><strong>Festival</strong><span>Creative artwork</span></div>
+          <div class="stat"><strong>Visual</strong><span>Original concepts</span></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img src="poster-1.jpg" alt="VisualAlchemy poster artwork">
+        <div class="hero-tag">VisualAlchemy / Original Edit</div>
+      </div>
+    </section>
+
+    <section id="work" class="reveal">
+      <div class="section-head">
+        <div><div class="eyebrow">Portfolio</div><h2>My Work</h2></div>
+        <p>Browse movie and festival designs. Tap any poster for a larger view.</p>
+      </div>
+      <div class="filters">
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="movie">Movies</button>
+        <button class="filter" data-filter="festival">Festivals</button>
+      </div>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section class="featured">
+      <div class="section-head">
+        <div><div class="eyebrow">Services</div><h2>What I Create</h2></div>
+        <p>Poster-focused creative work for cinema, festivals and social media.</p>
+      </div>
+      <div class="services">
+        <div class="service"><h3>🎬 Movie Posters</h3><p>Cinematic poster edits and character-focused visual compositions.</p></div>
+        <div class="service"><h3>🎉 Festival Posters</h3><p>Festival greetings and themed artwork designed for sharing.</p></div>
+        <div class="service"><h3>✨ Social Creatives</h3><p>Visual posts and promotional artwork for social platforms.</p></div>
+      </div>
+    </section>
+
+    <section id="about" class="reveal">
+      <div class="about">
+        <div><div class="eyebrow">The creator</div><h2>Creative creator for posters.</h2></div>
+        <div>
+          <p>I'm the creator behind VisualAlchemy, focused on creating eye-catching poster edits inspired by cinema, characters, moods and festivals.</p>
+          <p>This portfolio is a place to showcase my visual experiments and build a collection of memorable designs.</p>
+          <a class="btn" href="https://instagram.com/visualalchemy.07" target="_blank" rel="noopener">Follow the work →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="reveal">
+      <div class="contact">
+        <div class="eyebrow">Get in touch</div>
+        <h3>Have an idea for a poster?</h3>
+        <p>For creative collaborations, poster work or enquiries, reach out by email.</p>
+        <a href="mailto:t9398358967@gmail.com">t9398358967@gmail.com</a>
+      </div>
+    </section>
+  
+<section class="social-proof reveal">
+  <p>More visual work and behind-the-scenes edits on
+    <a href="https://instagram.com/visualalchemy.07" target="_blank" rel="noopener">@visualalchemy.07</a>
+  </p>
+</section>
+</main>
+
+  <footer>© 2026 VisualAlchemy. Creative poster edits & visual experiments.</footer>
+
+  <div class="modal" id="modal" onclick="closeModal(event)">
+    <button class="close" aria-label="Close">×</button>
+    <img id="modalImg" src="" alt="Expanded poster">
+  </div>
+
+  <script>
+    /*
+      EASY EDITING:
+      Add a new poster by uploading its image beside index.html and adding one
+      object to WORKS below.
+      Example:
+      {title:"My New Poster", type:"movie", year:"2026", image:"poster-4.jpg"}
+      type can be "movie" or "festival".
+    */
+    const WORKS = [
+      {title:"Dark Mythic Edit", type:"movie", year:"2026", image:"poster-1.jpg"},
+      {title:"Retro Cinema Edit", type:"movie", year:"2026", image:"poster-2.jpg"},
+      {title:"Classic Love Edit", type:"movie", year:"2026", image:"poster-3.jpg"}
+    ];
+
+    const gallery = document.getElementById("gallery");
+    let activeFilter = "all";
+
+    function renderGallery(){
+      gallery.innerHTML = WORKS
+        .filter(item => activeFilter === "all" || item.type === activeFilter)
+        .map(item => `
+          <article class="card" onclick="openModal('${item.image}')">
+            <img src="${item.image}" alt="${item.title}" loading="lazy">
+            <div class="card-info">
+              <strong>${item.title}</strong>
+              <span>${item.type === "movie" ? "Movie" : "Festival"} · ${item.year}</span>
+            </div>
+          </article>
+        `).join("");
+    }
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+        activeFilter = button.dataset.filter;
+        renderGallery();
+      });
+    });
+
+    renderGallery();
+
+    function openModal(src){
+      document.getElementById('modalImg').src = src;
+      document.getElementById('modal').classList.add('open');
+      document.body.style.overflow='hidden';
+    }
+    function closeModal(e){
+      if(e.target.id === 'modal' || e.target.classList.contains('close')){
+        document.getElementById('modal').classList.remove('open');
+        document.body.style.overflow='';
+      }
+    }
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape'){
+        document.getElementById('modal').classList.remove('open');
+        document.body.style.overflow='';
+      }
+    });
+  </script>
+<button class="backtop" id="backtop" aria-label="Back to top">↑</button>
+</body>
+</html>
