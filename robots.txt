@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://visualalchemy07-web.github.io/Visualalchemy/sitemap.xml
