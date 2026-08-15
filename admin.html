@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VisualAlchemy Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #080808;
+  color: white;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 25px 18px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.card {
+  background: #151515;
+  border: 1px solid #292929;
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0 15px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #0d0d0d;
+  color: white;
+  font-size: 15px;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button:hover {
+  opacity: .85;
+}
+
+.logout {
+  background: #292929;
+  color: white;
+}
+
+.delete {
+  background: #b3261e;
+  color: white;
+}
+
+.post {
+  border-top: 1px solid #333;
+  padding: 18px 0;
+}
+
+.post img {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #000;
+}
+
+.post h3 {
+  margin-bottom: 5px;
+}
+
+.small {
+  color: #aaa;
+  font-size: 13px;
+}
+
+#dashboard {
+  display: none;
+}
+
+#message {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>VisualAlchemy Admin</h1>
+
+<!-- LOGIN -->
+<div id="loginBox" class="card">
+
+<h2>Admin Login</h2>
+
+<input
+  type="email"
+  id="email"
+  placeholder="Admin email"
+>
+
+<input
+  type="password"
+  id="password"
+  placeholder="Password"
+>
+
+<button onclick="login()">Login</button>
+
+<div id="loginMessage"></div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+<div class="card">
+
+<h2 id="formTitle">Add New Poster</h2>
+
+<input
+  type="text"
+  id="title"
+  placeholder="Poster title"
+>
+
+<textarea
+  id="description"
+  placeholder="Description"
+></textarea>
+
+<select id="category">
+
+<option value="">Select category</option>
+<option value="Movies">Movies</option>
+<option value="Romance">Romance</option>
+<option value="Horror">Horror</option>
+<option value="Action">Action</option>
+<option value="Art">Art</option>
+<option value="Quotes">Quotes</option>
+<option value="Other">Other</option>
+
+</select>
+
+<input
+  type="file"
+  id="image"
+  accept="image/*"
+>
+
+<button onclick="savePost()">
+  Publish Poster
+</button>
+
+<button
+  id="cancelEdit"
+  onclick="cancelEdit()"
+  style="display:none;background:#333;color:white;"
+>
+Cancel Edit
+</button>
+
+<div id="message"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Your Posts</h2>
+
+<div id="postsList">
+Loading posts...
+</div>
+
+</div>
+
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   SUPABASE CONFIGURATION
+   ========================================= */
+
+/*
+   Replace ONLY these two values.
+
+   Do NOT use your service_role/secret key.
+*/
+
+const SUPABASE_URL =
+"qgidwctrnozfnacvmsaq";
+
+const SUPABASE_KEY =
+"sb_publishable_i7aCJB6jK4-IHq9zRPhxPg_qwjEJkh7";
+
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================================
+   VARIABLES
+   ========================================= */
+
+let editingPost = null;
+
+
+/* =========================================
+   LOGIN
+   ========================================= */
+
+async function login() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const message =
+    document.getElementById("loginMessage");
+
+  message.textContent = "Logging in...";
+
+  const { error } =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+
+    message.textContent =
+      "Login failed: " + error.message;
+
+    return;
+  }
+
+  document.getElementById("loginBox")
+    .style.display = "none";
+
+  document.getElementById("dashboard")
+    .style.display = "block";
+
+  loadPosts();
+}
+
+
+/* =========================================
+   LOGOUT
+   ========================================= */
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  location.reload();
+}
+
+
+/* =========================================
+   SAVE POST
+   ========================================= */
+
+async function savePost() {
+
+  const title =
+    document.getElementById("title").value.trim();
+
+  const description =
+    document.getElementById("description").value.trim();
+
+  const category =
+    document.getElementById("category").value;
+
+  const imageFile =
+    document.getElementById("image").files[0];
+
+  const message =
+    document.getElementById("message");
+
+  if (!title) {
+    message.textContent = "Please enter a title.";
+    return;
+  }
+
+  if (!category) {
+    message.textContent = "Please select a category.";
+    return;
+  }
+
+  if (!editingPost && !imageFile) {
+    message.textContent = "Please select a poster image.";
+    return;
+  }
+
+  message.textContent = "Publishing...";
+
+
+  /* =========================================
+     NEW POST
+     ========================================= */
+
+  if (!editingPost) {
+
+    const fileName =
+      Date.now() +
+      "-" +
+      Math.random().toString(36).substring(2) +
+      "-" +
+      imageFile.name.replace(/\s+/g, "-");
+
+
+    const { error: uploadError } =
+      await supabaseClient.storage
+        .from("posters")
+        .upload(fileName, imageFile);
+
+
+    if (uploadError) {
+
+      message.textContent =
+        "Image upload failed: " +
+        uploadError.message;
+
+      return;
+    }
+
+
+    const { data: publicData } =
+      supabaseClient.storage
+        .from("posters")
+        .getPublicUrl(fileName);
+
+
+    const imageUrl =
+      publicData.publicUrl;
+
+
+    const { error: insertError } =
+      await supabaseClient
+        .from("posts")
+        .insert({
+
+          title: title,
+
+          description: description,
+
+          category: category,
+
+          image_url: imageUrl
+
+        });
+
+
+    if (insertError) {
+
+      message.textContent =
+        "Post creation failed: " +
+        insertError.message;
+
+      return;
+    }
+
+  }
+
+
+  /* =========================================
+     EDIT EXISTING POST
+     ========================================= */
+
+  else {
+
+    let imageUrl =
+      editingPost.image_url;
+
+
+    if (imageFile) {
+
+      /*
+         Upload new image
+      */
+
+      const newFileName =
+        Date.now() +
+        "-" +
+        Math.random()
+          .toString(36)
+          .substring(2) +
+        "-" +
+        imageFile.name
+          .replace(/\s+/g, "-");
+
+
+      const { error: uploadError } =
+        await supabaseClient.storage
+          .from("posters")
+          .upload(
+            newFileName,
+            imageFile
+          );
+
+
+      if (uploadError) {
+
+        message.textContent =
+          "New image upload failed: " +
+          uploadError.message;
+
+        return;
+      }
+
+
+      const { data: publicData } =
+        supabaseClient.storage
+          .from("posters")
+          .getPublicUrl(newFileName);
+
+
+      imageUrl =
+        publicData.publicUrl;
+    }
+
+
+    const { error: updateError } =
+      await supabaseClient
+        .from("posts")
+        .update({
+
+          title: title,
+
+          description: description,
+
+          category: category,
+
+          image_url: imageUrl
+
+        })
+        .eq("id", editingPost.id);
+
+
+    if (updateError) {
+
+      message.textContent =
+        "Update failed: " +
+        updateError.message;
+
+      return;
+    }
+
+  }
+
+
+  message.textContent =
+    "✅ Poster published successfully!";
+
+
+  clearForm();
+
+  loadPosts();
+}
+
+
+/* =========================================
+   LOAD POSTS
+   ========================================= */
+
+async function loadPosts() {
+
+  const list =
+    document.getElementById("postsList");
+
+  list.innerHTML =
+    "Loading...";
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("posts")
+      .select("*")
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+
+  if (error) {
+
+    list.innerHTML =
+      "Unable to load posts: " +
+      error.message;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    list.innerHTML =
+      "No posts yet.";
+
+    return;
+  }
+
+
+  list.innerHTML = "";
+
+
+  data.forEach(post => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "post";
+
+
+    div.innerHTML = `
+
+      <img
+        src="${escapeHtml(post.image_url)}"
+        alt="${escapeHtml(post.title)}"
+      >
+
+      <h3>
+        ${escapeHtml(post.title)}
+      </h3>
+
+      <div class="small">
+        ${escapeHtml(post.category || "")}
+      </div>
+
+      <p>
+        ${escapeHtml(post.description || "")}
+      </p>
+
+      <button
+        onclick='editPost(${JSON.stringify(post)})'
+      >
+        Edit
+      </button>
+
+      <button
+        class="delete"
+        onclick="deletePost(${post.id})"
+      >
+        Delete
+      </button>
+    `;
+
+
+    list.appendChild(div);
+
+  });
+}
+
+
+/* =========================================
+   EDIT
+   ========================================= */
+
+function editPost(post) {
+
+  editingPost = post;
+
+  document.getElementById("title")
+    .value = post.title || "";
+
+  document.getElementById("description")
+    .value = post.description || "";
+
+  document.getElementById("category")
+    .value = post.category || "";
+
+  document.getElementById("formTitle")
+    .textContent = "Edit Poster";
+
+  document.getElementById("cancelEdit")
+    .style.display = "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================
+   CANCEL EDIT
+   ========================================= */
+
+function cancelEdit() {
+
+  editingPost = null;
+
+  clearForm();
+
+}
+
+
+/* =========================================
+   DELETE
+   ========================================= */
+
+async function deletePost(id) {
+
+  if (!confirm(
+    "Delete this poster permanently?"
+  )) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("posts")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  loadPosts();
+}
+
+
+/* =========================================
+   CLEAR FORM
+   ========================================= */
+
+function clearForm() {
+
+  editingPost = null;
+
+  document.getElementById("title")
+    .value = "";
+
+  document.getElementById("description")
+    .value = "";
+
+  document.getElementById("category")
+    .value = "";
+
+  document.getElementById("image")
+    .value = "";
+
+  document.getElementById("formTitle")
+    .textContent = "Add New Poster";
+
+  document.getElementById("cancelEdit")
+    .style.display = "none";
+}
+
+
+/* =========================================
+   BASIC HTML ESCAPING
+   ========================================= */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+</script>
+
+</body>
+</html>
